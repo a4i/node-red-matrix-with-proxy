@@ -1,0 +1,82 @@
+*** node-red-data/node_modules/node-red-contrib-matrix-chat/src/matrix-server-config.js	2024-03-11 14:37:21.288175997 +0100
+--- matrix-server-config.js	2024-03-11 14:36:25.983750608 +0100
+***************
+*** 1,4 ****
+--- 1,5 ----
+  global.Olm = require('olm');
++ const HttpsProxyAgent = require('https-proxy-agent');
+  const fs = require("fs-extra");
+  const sdk = require("matrix-js-sdk");
+  const { resolve } = require('path');
+***************
+*** 7,21 ****
+  const {RoomEvent, RoomMemberEvent, HttpApiEvent, ClientEvent, MemoryStore} = require("matrix-js-sdk");
+  const request = require("request");
+  require("abort-controller/polyfill"); // polyfill abort-controller if we don't have it
+! if (!globalThis.fetch) {
+!     // polyfill fetch if we don't have it
+!     if (!globalThis.fetch) {
+!         import('node-fetch').then(({ default: fetch, Headers, Request, Response }) => {
+!             Object.assign(globalThis, { fetch, Headers, Request, Response })
+!         })
+      }
+  }
+  
+  module.exports = function(RED) {
+      // disable logging if set to "off"
+      let loggingSettings = RED.settings.get('logging');
+--- 8,29 ----
+  const {RoomEvent, RoomMemberEvent, HttpApiEvent, ClientEvent, MemoryStore} = require("matrix-js-sdk");
+  const request = require("request");
+  require("abort-controller/polyfill"); // polyfill abort-controller if we don't have it
+! // Don't rely on node's experimental fetch() api.
+! // Undici's proxy agent is not commonly used yet. Wait and see
+! import('node-fetch').then(({ default: fetch, Headers, Request, Response }) => {
+!     Object.assign(globalThis, { fetch, Headers, Request, Response })
+! })
+! const proxyAgent = new HttpsProxyAgent("http://squid:3128");
+! 
+! const fetchWithAgent = async (...args) => {
+!     let params = {};
+!     if (args && args.length > 1) {
+!         params = args[1];
+      }
++     return await fetch(args[0], {...params, agent: proxyAgent})
+  }
+  
++ 
+  module.exports = function(RED) {
+      // disable logging if set to "off"
+      let loggingSettings = RED.settings.get('logging');
+***************
+*** 135,140 ****
+--- 143,149 ----
+              fs.ensureDirSync(storageDir); // create storage directory if it doesn't exist
+              upgradeDirectoryIfNecessary(node, storageDir);
+              node.matrixClient = sdk.createClient({
++                 fetchFn: fetchWithAgent,
+                  baseUrl: this.url,
+                  accessToken: this.credentials.accessToken,
+                  cryptoStore: new LocalStorageCryptoStore(localStorage),
+***************
+*** 447,452 ****
+--- 456,462 ----
+                  displayName = req.body.displayName || undefined;
+  
+              const matrixClient = sdk.createClient({
++                 fetchFn: fetchWithAgent,
+                  baseUrl: baseUrl,
+                  deviceId: deviceId,
+                  localTimeoutMs: '30000',
+***************
+*** 534,537 ****
+          localStorage.setItem('my_device_id', deviceId);
+          return true;
+      }
+! }
+\ Pas de fin de ligne à la fin du fichier
+--- 544,547 ----
+          localStorage.setItem('my_device_id', deviceId);
+          return true;
+      }
+! }

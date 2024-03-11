@@ -1,0 +1,10 @@
+data/squid-data/*
+data/squid-log/*
+node_modules*
+package-lock.json
+node-red-data/matrix-client-storage*
+node-red-data/.npm
+node-red-data/flows_cred.json
+*.backup
+node-red-data/.config.runtime.json
+node-red-data/.config.*

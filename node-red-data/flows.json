@@ -1,0 +1,77 @@
+[
+    {
+        "id": "2b86e57cad22ea73",
+        "type": "tab",
+        "label": "Flux 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "60248fc86428eb44",
+        "type": "matrix-server-config",
+        "name": "matrix-server",
+        "autoAcceptRoomInvites": true,
+        "enableE2ee": true,
+        "global": true
+    },
+    {
+        "id": "f584751c759ea3c3",
+        "type": "inject",
+        "z": "2b86e57cad22ea73",
+        "name": "",
+        "props": [
+            {
+                "p": "userId",
+                "v": "@user-domain:server",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "f29d9bd3c364deb1"
+            ]
+        ]
+    },
+    {
+        "id": "95b9c0390f91039b",
+        "type": "debug",
+        "z": "2b86e57cad22ea73",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f29d9bd3c364deb1",
+        "type": "matrix-whois-user",
+        "z": "2b86e57cad22ea73",
+        "name": "",
+        "server": "60248fc86428eb44",
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "95b9c0390f91039b"
+            ],
+            [
+                "95b9c0390f91039b"
+            ]
+        ]
+    }
+]

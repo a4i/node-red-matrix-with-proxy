@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  node-red:
+    image: nodered/node-red:latest-18
+    environment:
+      - TZ=Europe/Paris
+    ports:
+      - "1880:1880"
+    networks:
+      - node-red-net
+    volumes:
+      - ./node-red-data:/data
+      - ./matrix-server-config.js:/data/node_modules/node-red-contrib-matrix-chat/src/matrix-server-config.js:ro
+    links:
+      - squid
+
+  squid:
+    image: sameersbn/squid:3.5.27-2
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./data/squid-data:/var/spool/squid
+      - ./data/squid-log:/var/log/squid
+      - ./squid.conf:/etc/squid/squid.conf
+    networks:
+      node-red-net:
+        aliases:
+          - squid
+
+networks:
+  node-red-net:

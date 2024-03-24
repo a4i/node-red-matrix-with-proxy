@@ -1,0 +1,63 @@
+*** /home/sylvain/src/nodered/node-red-data/node_modules/node-red-contrib-matrix-chat/src/matrix-server-config.html	2024-03-11 14:37:21.040174089 +0100
+--- matrix-server-config.html	2024-03-24 11:27:50.025590456 +0100
+***************
+*** 36,42 ****
+              name: { value: null },
+              autoAcceptRoomInvites: { value: true },
+              enableE2ee: { type: "checkbox", value: true },
+!             global: { type: "checkbox", value: true }
+          },
+          icon: "matrix.png",
+          label: function() {
+--- 36,69 ----
+              name: { value: null },
+              autoAcceptRoomInvites: { value: true },
+              enableE2ee: { type: "checkbox", value: true },
+!             global: { type: "checkbox", value: true },
+!             proxy: {type:"http proxy",required: false,
+!                 label:"Proxy configuration"}
+!         },
+!         oneditprepare: function() {
+!             const node = this;
+!             function updateProxyOptions() {
+!                 if ($("#node-input-useProxy").is(":checked")) {
+!                     $("#node-input-useProxy-row").show();
+!                 } else {
+!                     $("#node-input-useProxy-row").hide();
+!                 }
+!                 RED.tray.resize();
+!             }
+!             if (node.proxy) {
+!                 $("#node-input-useProxy").prop("checked", true);
+!             } else {
+!                 $("#node-input-useProxy").prop("checked", false);
+!             }
+!             updateProxyOptions();
+!             $("#node-input-useProxy").on("click", function() {
+!                 updateProxyOptions();
+!             });
+!         },
+!         oneditsave: function() {
+!             if (!$("#node-input-useProxy").is(":checked")) {
+!                 $("#node-config-input-proxy").val("_ADD_");
+!             }
+          },
+          icon: "matrix.png",
+          label: function() {
+***************
+*** 57,62 ****
+--- 84,97 ----
+      </div>
+  
+      <div class="form-row">
++         <input type="checkbox" id="node-input-useProxy" style="display: inline-block; width: auto; vertical-align: top;">
++         <label for="node-input-useProxy" style="width: auto;"><span data-i18n="httpin.use-proxy"> Use proxy</span></label>
++         <div id="node-input-useProxy-row" class="hide">
++             <label style="width: auto; margin-left: 20px; margin-right: 10px;" for="node-config-input-proxy"><i class="fa fa-globe"></i> <span data-i18n="httpin.proxy-config"> Proxy configuration</span></label><input type="text" style="width: 270px" id="node-config-input-proxy">
++         </div>
++     </div>
++ 
++     <div class="form-row">
+          <label for="node-config-input-url"><i class="fa fa-server"></i> Server URL</label>
+          <input type="text" placeholder="https://matrix.org" id="node-config-input-url">
+      </div>

@@ -12,6 +12,7 @@ services:
     volumes:
       - ./node-red-data:/data
       - ./matrix-server-config.js:/data/node_modules/node-red-contrib-matrix-chat/src/matrix-server-config.js:ro
+      - ./matrix-server-config.html:/data/node_modules/node-red-contrib-matrix-chat/src/matrix-server-config.html:ro
     links:
       - squid
 

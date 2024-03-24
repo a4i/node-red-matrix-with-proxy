@@ -19,3 +19,12 @@ docker compose up -d
 
 You can now see traffic in your proxy logs.
 
+Proxy is configured via the core "http proxy" config node: https://github.com/node-red/node-red/blob/master/packages/node_modules/%40node-red/nodes/core/network/06-httpproxy.html
+Doing so we can share proxy configuration between nodes.
+
+The proxy is used as seen in the core "httprequest" node : https://github.com/node-red/node-red/blob/master/packages/node_modules/%40node-red/nodes/core/network/21-httprequest.html
+
+But unlike the httprequest module, which uses GOT for its requests, we use node-fetch, based on existing matrix node code.
+
+The matrix node code only used node-fetch if node didn't have the fetch() api. But Unidici's implementation of node's experimental fetch() api doesn't use the standard ProxyAgent. So we prefer to force the use of node-fetch.
+ 
